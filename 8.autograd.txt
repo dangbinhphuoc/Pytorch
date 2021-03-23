@@ -1,0 +1,33 @@
+Trung tâm của toàn bộ các mạng nơ ron hoạt động trên pytorch là autograd package.
+Chức năng: 
+    - Tự động tính toán đạo hàm trên toàn bộ các toán tử của tensors.
+    - Có nghĩa rằng quá trình lan truyền ngược được xác định khi mà code được chạy, và do đó mỗi vòng lặp có thể có kết quả thay đổi tham số theo lan truyền ngược khác nhau.
+Theo dõi lịch sử của tensor torch:
+    - torch.tensor là package khởi tạo các tensor torch. 
+    - Mỗi một tensor torch sẽ có 1 thuộc tính là .requires_grad
+    - Nếu bạn set thuộc tính này về True, các toán tử triển khai trên tensor sẽ được theo dõi
+    - Khi kết thúc quá trình lan truyền thuận bạn có thể gọi .backward() và mọi tính toán gradient sẽ được tự động thực hiện dựa trên lịch sử đã được lưu lại.
+    - Các gradient cho tensor này sẽ được tích lũy và xem tại thuộc tính .grad.
+Để dừng theo dõi một tensor chúng ta gọi vào hàm .detach(). Khi đó các hoạt động trên tensor sẽ không còn được lưu vết nữa.
+Ngoài ra để ngăn tensor lưu lại lịch sử (và sử dụng memory), chúng ta cũng có thể bao quanh code block triển khai tensor với hàm with torch.no_grad()
+Nó rất hữu ích trong trường hợp đánh giá model bởi vì khi thuộc tính requires_grad = True thì model sẽ có thể được cập nhật tham số. 
+Nhưng quá trình đánh giá model sẽ không cần cập nhật tham số nên chúng ta không cần áp dụng gradient lên chúng. Đơn giản là set requires_grad = False.
+Ngoài ra class Function cũng rất quan trọng trong thực hiện autograd.
+
+Lưu trữ đồ thị tính toán:
+    - 2 class Tensor và Function cùng tương tác và xây dựng một đồ thị chu trình mà đồ thị này mã hóa lại toàn bộ lịch sử tính toán. 
+    - Mỗi một tensor đều có 1 thuộc tính grad_fn trích dẫn đến một Function đã tạo ra Tensor (trừ trường hợp tensor được tạo ra bởi user được set thuộc tính grad_fn là None).
+    - Nếu muốn tính toán đạo hàm chúng ta gọi vào hàm .backward() của Tensor. 
+    - Nếu Tensor là một scalar sẽ không cần xác định bất kì đối số gradient nào cho .backward(). 
+    - Tuy nhiên khi Tensor có nhiều hơn 1 phẩn tử cần xác định đối số gradient là một tensor có cùng kích thước. Đối số này sẽ qui định tốc độ thay đổi theo gradient tại mỗi chiều là bao nhiêu.
+
+Hàm torch.autograd sẽ là hàm chức năng tính tích giữa vector và ma trận jacobian. 
+Hàm số cho ta biết mức độ thay đổi của các chiều khi đi theo phương gradient.
+Định nghĩa về ma trận jacobian: 
+    - Giả sử f là một hàm số ánh xạ từ vector x = (x1, x2, ..., xn) lên vector hàm số y = (y1, y2, ..., ym) : R^n -> R^m
+    - Khi đó ma trận Jacobian của hàm số f chính là ma trận đạo hàm bậc nhất của vector hàm số y theo các chiều của vector x
+Cho một vector v = (v1, v2, ..., vm)^T bất kì. 
+Nếu v là ma trận gradient của hàm loss function l = g(y) thì v = (d(l)/d(y1), d(l)/d(y2), ...,d(l)/d(ym))
+Do đó theo công thức chain rule thì tích vector-jacobian sẽ là gradient của hàm l tương ứng với vector x: d(l)/d(x) = d(g(y))/d(x) = (d(y)/d(x))^T * d(g(y))/d(y) = J^T*v 
+Đây chính là giá trị của tích vector-jacobian được tính toán dựa trên hàm số torch.autograd. 
+sCông thức này giúp ta dễ dàng truyền các gradient bên ngoài vào backward() để tùy biến gradient của mô hình theo gradient truyền vào
