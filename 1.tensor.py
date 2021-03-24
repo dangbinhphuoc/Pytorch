@@ -24,3 +24,22 @@ print(x)
 
 # get size của ma trận
 print(x.size())
+
+# nơi lưu trữ
+x = torch.tensor([[1, 2, 3], [4, 5, 6]])
+print(x.storage())
+
+# contiguous tensors
+x_t = x.t()
+print(x)
+print(x_t)
+print(id(x.storage()) == id(x_t.storage()))
+print(x.stride()) # (1, 3)
+print(x_t.stride()) # (3, 1)
+
+# kiểm tra lưu trữ có liền kề không do storage lưu trữ theo kiểu liền kề nhau
+# contiguous tensors
+print(x.is_contiguous())
+print(x_t.is_contiguous())
+print(x.view(1, -1))
+print(x_t.view(1, -1)) # RuntimeError

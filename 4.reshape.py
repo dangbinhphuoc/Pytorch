@@ -3,11 +3,18 @@ import torch
 arr = [[1, 2, 3], [4, 5, 6]]
 x = torch.tensor(arr)
 
-#reshape
+# reshape
 y = x.view(3, 2)
 z = x.view(6, 1)
+# việc xem shape của tensor có thể dùng .size() hoặc .shape
 print(x.size(), y.size(), z.size())
 
-#reshape tự định dạng
+# reshape tự định dạng
 t = x.view(-1, 6) # -1 sẽ tự tính nếu chúng ta không cung cấp dữ liệu
 print(t.size())
+
+# transpose
+arr = [[1, 2, 3], [4, 5, 6]]
+x = torch.tensor(arr)
+x = torch.transpose(x, 1, 0)
+print(x)
