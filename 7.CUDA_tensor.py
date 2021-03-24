@@ -5,9 +5,22 @@ x = torch.tensor(range(0, 3))
 # kiểm tra có tồn tại CUDA không.
 print(torch.cuda.is_available())
 if torch.cuda.is_available():
-    device = torch.device("cuda") # khởi tạo một cuda device object
-    y = torch.ones(3, 3, device=device) # trực tiếp khởi tạo một tensor trên GPU
-    x = x.to(device) # truyền giá trị tensor vào thiết bị 
-    z = x + y
+    # khởi tạo một cuda device object
+    device = torch.device("cuda") 
+    # trực tiếp khởi tạo một tensor trên GPU
+    y_gpu = torch.ones(3, 3, device=device) 
+    # truyền giá trị tensor vào GPU
+    x_gpu = x.to(device) 
+    # thực hiện phép tính trên GPU
+    z_gpu = x_gpu + y_gpu 
     print(z)
-    print(z.to("cpu", torch.double))
+    # mỗi tensor chỉ được lưu trữ trên 1 GPU nên lưu trữ theo index
+    x_gpu = x.to(device='cuda:0')
+    # hoặc
+    x_gpu = x.cuda(0)
+    # chuyển tensor từ GPU thành CPU
+    print(z.to("cpu", torch.double)) 
+    # hoặc
+    x_cpu = x_gpu.cpu()
+
+
