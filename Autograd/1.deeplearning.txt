@@ -1,0 +1,11 @@
+Thông thường ở 1 bài toán về Deep Learning sẽ có các bước:
+    - Visualize dữ liệu.
+    - Preprocess dữ liệu.
+    - Chọn model cho bài toán.
+    - Tạo loss function.
+    - Tối ưu loss function để tìm tham số của model bằng thuật toán gradient descent
+
+Ở thuật toán gradient descent, cần tính đạo hàm của loss function (L) với các tham số của model. 
+Ở mô hình neural network, sẽ tính đạo hàm L với các tham số qua thuật toán backpropagation.
+Phần này khá phức tạp, nên đa phần các thư viện sẽ tự tính đạo hàm
+Ở Pytorch cũng vậy, cơ chế tính đạo hàm trong Pytorch được gọi là Autograd (AUTOMATIC DIFFERENTIATION PACKAGE)
