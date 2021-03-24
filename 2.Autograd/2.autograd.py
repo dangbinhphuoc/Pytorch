@@ -25,8 +25,3 @@ print(out)
 out.backward()
 # kết quả đạo hàm sẽ được lưu tại .grad
 print(x.grad)
-
-from torchviz import make_dot
-print(make_dot(out))
-
-    
